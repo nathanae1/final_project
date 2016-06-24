@@ -103,3 +103,17 @@ def feature_removal_pipeline(column, df):
         return_mat.append(unit_col_mat*col_arr_df)
     return pd.DataFrame(return_mat, columns=df.columns)
 ```
+
+## Day 3:
+Today was spent on planning and nomenclature. I expected preprocessing the data
+to take longer than it did, so I spent quite a while thinking about how to
+better my models or reporting. I eventually came to the decision to update my
+similarity predictor to use the Kolmogorov-Smirnov statistic as a possible
+metric for distributional differences in the data. In order to double check that
+the scipy implementation was actually capable of discerning differences in shape
+in 'real world' data, I used a brute force method of realigning the means (just
+subtracting the differences out) as a baseline to compare against.
+
+## Day 4:
+I spent most of today trying to figure out how to best report the distributional
+differences that splitting the data creates.
