@@ -116,4 +116,6 @@ subtracting the differences out) as a baseline to compare against.
 
 ## Day 4:
 I spent most of today trying to figure out how to best report the distributional
-differences that splitting the data creates.
+differences that splitting the data creates. T-tests are the be the most
+consistent way to compare the distributions as of right now, but I am leaving
+other metrics in to make the scoring function more generalizable.
