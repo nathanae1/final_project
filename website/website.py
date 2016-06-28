@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template, jsonify
 import pandas as pd
 import numpy as np
 from scipy.stats import ks_2samp, chisquare, ttest_ind
@@ -62,38 +62,34 @@ def str_list_to_series(text):
 
 # Form page to submit text
 @app.route('/')
-def submission_page():
-    return '''
-        <form action="/results" method='POST' >
-            Model Predictions:
-            <input type="text" name="predictions" />
-            <br>Actual Values:
-            <input type="text" name="actual" />
-            <br>Category to split on:
-            <input type="text" name="categorical" />
-            <input type="submit" />
-        </form>
-        '''
+def index():
+    return render_template('index.html')
 
 
-@app.route('/results', methods=['GET', 'POST'])
-def api_results():
+@app.route('/_results')
+def results():
+    predictions = request.args.get('predictions', '', type=str)
+    actual = request.args.get('actual', '', type=str)
+    categorical = request.args.get('categorical', '', type=str)
     predictions = [float(x) for x in
-                   ast.literal_eval(str(request.form['predictions']))]
-    actual = str_list_to_series(str(request.form['actual']))
-    categorical = str_list_to_series(str(request.form['categorical']))
+                   ast.literal_eval(predictions)]
+    actual = str_list_to_series(actual)
+    categorical = str_list_to_series(categorical)
     out_dict = _test_variable_numer(predictions, actual, categorical)
     out_str = '''
               True estimates were off by: {0} <br>
               False estimates were off by: {1} <br>
               T-score: statistic: {2} p value: {3}<br>
               K-score: statistic: {4} p value: {5}<br
-              '''.format(out_dict['True'], out_dict['False'],
+              '''.format(out_dict['True'],
+                         out_dict['False'],
                          out_dict['t-score'][0],
                          out_dict['t-score'][1],
                          out_dict['k-score'][0],
                          out_dict['k-score'][1],)
-    return out_str
+    return jsonify(false_mean=out_dict['False'],
+                   true_mean=out_dict['True'],
+                   t_test_p_value=out_dict['t-score'][1])
 
 
 if __name__ == '__main__':

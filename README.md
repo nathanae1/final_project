@@ -119,3 +119,16 @@ I spent most of today trying to figure out how to best report the distributional
 differences that splitting the data creates. T-tests are the be the most
 consistent way to compare the distributions as of right now, but I am leaving
 other metrics in to make the scoring function more generalizable.
+
+## Day 5:
+After spending half the day thinking about the assumptions and transformations
+I would have to make in order to add other statistics (mainly the
+Kolmogorov-Smirnov) I decided to run with the ones I have now. In preparation
+for working on my website I spent the rest of my time working on cleaning up and
+commenting my pipeline. I spent the afternoon at a hackathon, so I got less done
+today than the other days.
+
+# Day 6:
+Today is the first day in the second week. Since this is supposed to be useable,
+this week will be dedicated to making my web app more useable and functional
+(at least at first).

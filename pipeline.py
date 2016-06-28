@@ -17,11 +17,16 @@ class feature_remover(object):
                               default RandomForestRegressor
                split: float between 0.0 and 1.0 - size of train/test split
         '''
+        # Instantalizing all the variables needed (or that you might want):
+
+        # Reading in the data
         self.X = X
         self.y = y
         self.removed_feature = removed_feature
         self.model = model
         self._split = split
+
+        #
         self._train_test_split = train_test_split(split=split)
         self.transformed_X = self._feature_removal_pipeline(X, removed_feature)
         self._untransformed_X_train, self._untransformed_X_test,
