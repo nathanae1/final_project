@@ -128,7 +128,12 @@ for working on my website I spent the rest of my time working on cleaning up and
 commenting my pipeline. I spent the afternoon at a hackathon, so I got less done
 today than the other days.
 
-# Day 6:
+## Day 6:
 Today is the first day in the second week. Since this is supposed to be useable,
-this week will be dedicated to making my web app more useable and functional
-(at least at first).
+the first few days of this week will be dedicated to making my web app more
+useable and functional. Today I got the basic framework and the pieces of the
+calculation code finished.
+
+## Day 7:
+More web stuff in the morning, but the website is finished (basic demo
+included).

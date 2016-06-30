@@ -5,7 +5,7 @@ from sklearn.cross_validation import train_test_split
 from scipy.stats import ks_2samp, chisquare, ttest_ind
 
 
-class feature_remover(object):
+class FeatureRemover(object):
     def __init__(self, X, y, removed_feature, model=RandomForestRegressor,
                  split=.3):
         '''
@@ -26,15 +26,19 @@ class feature_remover(object):
         self.model = model
         self._split = split
 
-        #
-        self._train_test_split = train_test_split(split=split)
+        # Transforming the data
         self.transformed_X = self._feature_removal_pipeline(X, removed_feature)
-        self._untransformed_X_train, self._untransformed_X_test,
-        self._transformed_X_train, self._transformed_X_test
-        self._y_train, self._y_test,
-        self._removed_feature_train, self._removed_feature_test =
-        self._train_test_split(self.X, self.transformed_X,
-                               self.y, self.removed_feature)
+
+        # Making the train/test split
+        self._train_test_split = train_test_split(split=split)
+        self._untransformed_X_train, self._untransformed_X_test, \
+            self._transformed_X_train, self._transformed_X_test, \
+            self._y_train, self._y_test, \
+            self._removed_feature_train, self._removed_feature_test = \
+            self._train_test_split(self.X, self.transformed_X,
+                                   self.y, self.removed_feature)
+
+        # Setting up global variables for the different models
         self.untransformed_model = None
         self.transformed_model = None
         self.untransformed_predictions = None
@@ -68,7 +72,13 @@ class feature_remover(object):
         self.transformed_predictions = \
             self.transformed_model.predict(self._transformed_X_test)
 
-    def scores(self):
+    def scores_numeric(self):
+        '''
+        INPUT: None
+        OUTPUT: dict scores
+        Returns a dictionary consisting of the results of running
+        _test_variable_numer on both the Untransformed and Transformed data
+        '''
         scores = dict({})
         scores['Untransformed'] = \
             _test_variable_numer(self.untransformed_predictions,
@@ -120,14 +130,14 @@ class feature_remover(object):
                pandas series actual: series of the actual values
                pandas series categorical: pandas series of to which category
                each row prediction/value pair belongs
-        OUTPUT: dict {'False':float, 'True':float}
+        OUTPUT: dict {'False':float, 'True':float, 'k-score':k-score object,
+                      'chi2-score':chi2 object, 't-score':t score object}
                Where True and False equate to the predictions and True %IQR and
                False %IQR are the raw differences for True and False divided by
                the IQR of the difference between the actual values and the
                predictions
         '''
         difference = pd.DataFrame(predictions-actual)
-        diff_iqr = difference.quantile(.75) - difference.quantile(.25)
 
         # Calculating differences for 0:
         diff_0 = difference[categorical == 0].mean()
@@ -135,9 +145,15 @@ class feature_remover(object):
         # Calculating differences for 1:
         diff_1 = difference[categorical == 1].mean()
 
+        # Finding the length of the shortest array
+        # Used in some statistics (if your model does not use these stats,
+        # please just ignore them)
         length = min([difference[categorical == 0].shape[0],
                       difference[categorical == 1].shape[0]])
 
+        # Calculating the test statistics
+        # Not all of these are relevant for every data set, just tried to give
+        # enough common ones to be useful
         k_score = ks_2samp(np.array(difference[categorical == 0]
                            [:length]).reshape(-1,),
                            np.array(difference[categorical == 1]
@@ -154,10 +170,16 @@ class feature_remover(object):
                             np.array(difference[categorical == 1])
                             .reshape(-1,))
 
+        # Finding the one score to rule them all
+        actual_std = np.std(actual)
+        diff_means = abs(diff_0 - diff_1)
+        to_rule_them_all = t_score*diff_means/actual_std
+
         return dict({'False': diff_0[0],
                      'True': diff_1[0],
                      'k-score': k_score,
                      'chi2-score': chi_score,
-                     't-score': t_score
+                     't-score': t_score,
+                     'one_score': to_rule_them_all
                      }
                     )
