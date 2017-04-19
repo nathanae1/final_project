@@ -17,8 +17,6 @@ class FeatureRemover(object):
                               default RandomForestRegressor
                split: float between 0.0 and 1.0 - size of train/test split
         '''
-        # Instantalizing all the variables needed (or that you might want):
-
         # Reading in the data
         self.X = X
         self.y = y
@@ -146,8 +144,7 @@ class FeatureRemover(object):
         diff_1 = difference[categorical == 1].mean()
 
         # Finding the length of the shortest array
-        # Used in some statistics (if your model does not use these stats,
-        # please just ignore them)
+        # Used in some statistics
         length = min([difference[categorical == 0].shape[0],
                       difference[categorical == 1].shape[0]])
 
@@ -170,16 +167,10 @@ class FeatureRemover(object):
                             np.array(difference[categorical == 1])
                             .reshape(-1,))
 
-        # Finding the one score to rule them all
-        actual_std = np.std(actual)
-        diff_means = abs(diff_0 - diff_1)
-        to_rule_them_all = t_score*diff_means/actual_std
-
         return dict({'False': diff_0[0],
                      'True': diff_1[0],
                      'k-score': k_score,
                      'chi2-score': chi_score,
                      't-score': t_score,
-                     'one_score': to_rule_them_all
                      }
                     )
